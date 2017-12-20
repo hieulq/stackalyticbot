@@ -6,18 +6,14 @@ A telegram bot that manages an alarm clock based on crontab
 @author Guy Sheffer (GuySoft) <guysoft at gmail dot com>
 """
 from telegram.ext import Updater
-from telegram.ext import CommandHandler, CallbackQueryHandler
-from telegram.ext import MessageHandler, Filters, ConversationHandler, \
-    RegexHandler
+from telegram.ext import CommandHandler
+from telegram.ext import MessageHandler, Filters
 from telegram.error import (TelegramError, Unauthorized, BadRequest,
                             TimedOut, ChatMigrated, NetworkError)
 from emoji import emojize
 import logging
 import os
-
-ALARM_COMMAND = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), "alarm.py"))
-DIR = os.path.dirname(__file__)
+from bot.utils import stackquery
 
 
 class Bot:
@@ -41,6 +37,9 @@ class Bot:
         help_handler = CommandHandler('help', self.help)
         self.dispatcher.add_handler(help_handler)
 
+        report_handler = CommandHandler('report', self.report)
+        self.dispatcher.add_handler(report_handler)
+
         self.dispatcher.add_error_handler(self.error_callback)
 
         echo_handler = MessageHandler(Filters.text, self.echo)
@@ -57,6 +56,15 @@ class Bot:
         print(update.message.text)
         bot.send_message(chat_id=update.message.chat_id,
                          text=update.message.text)
+        return
+
+    def report(self, bot, update):
+        print(update.message.text)
+        patch, table = stackquery.report()
+        bot.send_message(chat_id=update.message.chat_id,
+                         text=patch.get_string())
+        bot.send_message(chat_id=update.message.chat_id,
+                         text=table.get_string())
         return
 
     def error_callback(self, bot, update, error):

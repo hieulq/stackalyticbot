@@ -11,6 +11,7 @@ setup(
     packages=['bot'],
     include_package_data=True,
     install_requires=[
+        'telepot',
         'python-telegram-bot',
         'python-crontab',
         'pytz',
