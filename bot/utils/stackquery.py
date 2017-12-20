@@ -136,7 +136,7 @@ for member in members:
     try:
         member_stats = json.loads(member_url.read())
     except ValueError:
-        print "Something wrong with member " + member
+        print("Something wrong with member " + member)
         continue
     member_stats_patches = member_stats['contribution']['patch_set_count']
     member_stats_commits = member_stats['contribution']['commit_count']
