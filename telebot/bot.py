@@ -85,14 +85,14 @@ class Bot(object):
         plugindir = DIR('plugins')
         LOG.debug('Plugindir: {}' . format(plugindir))
 
-        for _, name, _ in pkgutil.iter_modules(telebot1.plugins.__path__):
+        for _, name, _ in pkgutil.iter_modules(telebot.plugins.__path__):
             try:
                 LOG.debug('Plugin: {}' . format(name))
-                module = importlib.import_module('telebot1.plugins.' + name)
+                module = importlib.import_module('telebot.plugins.' + name)
                 module_name = module.__name__.split('.')[-1]
                 _info = {
-                    'whatis': 'Unknow command',
-                    'usage': 'Unknow usage',
+                    'whatis': 'Unknown command',
+                    'usage': 'Unknown usage',
                     'handler': getattr(module, 'handle')
                 }
 
