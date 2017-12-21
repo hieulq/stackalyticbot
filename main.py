@@ -1,7 +1,7 @@
 import logging
 import os
 
-from telebot import bot
+from telebot1 import bot
 
 LOG = logging.getLogger(__name__)
 
