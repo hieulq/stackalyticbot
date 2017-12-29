@@ -2,7 +2,7 @@
 /namnh - Chot Chat command
 """
 import os
-from telebot import emojies
+from telebot.utils import emojies
 
 PARDIR = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
 IMG = PARDIR + '/imgs/namnh.jpg'

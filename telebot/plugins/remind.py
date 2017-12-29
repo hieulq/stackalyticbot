@@ -5,7 +5,7 @@ import datetime
 
 from telegram import ParseMode
 
-from telebot import emojies
+from telebot.utils import emojies
 
 
 def do_remind(bot, job):

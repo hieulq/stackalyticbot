@@ -27,7 +27,7 @@ import urllib.request
 from telegram import ParseMode
 import xlsxwriter
 
-from telebot import emojies
+from telebot.utils import emojies
 from telebot import utils
 
 LOG = logging.getLogger(__name__)
@@ -190,7 +190,7 @@ def get_report(workbook, worksheet, member, stats, targets,
 def handle(bot, update):
     chat_id = update.message.chat_id
     try:
-        config = json.load(open('/tmp/stackalyticsconfig.json'))
+        config = json.load(open('config.json'))
     except FileNotFoundError:
         msg = 'Config file doesn\' exist! Type /hep stackalytics again to \
                check usage!'

@@ -11,7 +11,7 @@ from telegram.ext import MessageHandler
 from telegram.ext import Updater
 
 import telebot.plugins
-from telebot import emojies
+from telebot.utils import emojies
 from telebot import settings
 
 LOG = logging.getLogger(__name__)
@@ -60,7 +60,7 @@ class Bot(object):
         else:
             file_id = update.message.document.file_id
             config_file = bot.get_file(file_id=file_id)
-            config_file.download(custom_path='/tmp/stackalyticsconfig.json')
+            config_file.download(custom_path='config.json')
 
     def _get_commands(self):
         commands = []
@@ -93,7 +93,7 @@ class Bot(object):
                 text += command[0] + '-' + command[1] + '\n'
         elif len(user_input) == 2 and user_input[1] in command_names:
             text = emojies.information_source + ' ' + \
-                self.plugins[user_input[1]]['usage']
+                   self.plugins[user_input[1]]['usage']
 
         bot.send_message(chat_id=update.message.chat_id, text=text)
 
