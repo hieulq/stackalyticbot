@@ -13,7 +13,7 @@ setup(
     install_requires=[
         'telepot',
         'apscheduler',
-        'python-telegram-telebot',
+        'python-telegram-bot',
         'python-crontab',
         'pytz',
         'xlsxwriter',
