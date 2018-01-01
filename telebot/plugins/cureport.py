@@ -36,25 +36,23 @@ def do_report(bot, job):
     try:
         config = json.load(open('config.json'))
     except FileNotFoundError:
-        msg = 'Config file doesn\' exist! Type /hep stackalytics again to \
+        msg = 'Config file doesn\'t exist! Type /help stackalytics again to \
                check usage!'
         utils.handle_error(LOG, bot, chat_id, msg)
         return
     except json.decoder.JSONDecodeError:
-        msg = 'Wrong format! Type /hep stackalytics again to \
+        msg = 'Wrong format! Type /help stackalytics again to \
               check right format!'
         utils.handle_error(LOG, bot, chat_id, msg)
         return
 
     bot.send_message(chat_id=chat_id,
-                     text='Report time, please wait for seconds...')
+                     text=emojies.no_speak +
+                          'Report time, please wait for seconds...')
 
     text = '{} *Report:*\n' . format(emojies.point_right)
-    template = '- Member `{}`: `{}` patches, `{}` commits, `{}` reviews.\n'
-
     targets = (int(config['review_target']), int(config['commit_target']))
-    report_file = \
-        'FVL_UC_Contribution_Summarization.xlsx'
+    report_file = 'FVL_UC_Contribution_Summarization.xlsx'
     workbook = xlsxwriter.Workbook(report_file)
     num_members = len(config['members'])
     team_stats_patches = 0
@@ -62,9 +60,9 @@ def do_report(bot, job):
     team_stats_reviews = 0
     worksheet = workbook.add_worksheet()
 
-    for index, member in enumerate(config['members']):
+    for index, name in enumerate(config['members']):
         results = stackalytics.query(bot, chat_id,
-                                     user_id=member,
+                                     user_id=config['members'][name],
                                      company=config['company'])
         if not results:
             continue
@@ -74,14 +72,13 @@ def do_report(bot, job):
         team_stats_patches += patches
         team_stats_reviews += reviews
 
-        stackalytics.get_report(workbook, worksheet, member, (reviews, commits),
-                                targets, num_members, index)
-        if index == num_members:
-            stackalytics.get_report(workbook, worksheet, 'Team',
-                                    (team_stats_reviews, team_stats_commits),
-                                    num_members, targets, 0, summary=True)
+        text = stackalytics.get_report(workbook, worksheet, name,
+                                       (reviews, commits), targets,
+                                       num_members, index, text)
 
-        text += template.format(member, patches, commits, reviews)
+    text = stackalytics.get_report(workbook, worksheet, 'Team',
+                                   (team_stats_reviews, team_stats_commits),
+                                   targets, num_members, 0, text, summary=True)
 
     workbook.close()
 

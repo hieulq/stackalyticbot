@@ -257,7 +257,7 @@ def handle(bot, update):
         # Bad performance, condition in loop (Fixme)
         if report:
             text = get_report(workbook, worksheet, name, (reviews, commits),
-                       targets, num_members, index, text)
+                              targets, num_members, index, text)
 
     text = get_report(workbook, worksheet, 'Team',
                       (team_stats_reviews, team_stats_commits),
