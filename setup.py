@@ -11,13 +11,9 @@ setup(
     packages=['telebot'],
     include_package_data=True,
     install_requires=[
-        'telepot',
-        'apscheduler',
         'python-telegram-bot',
-        'python-crontab',
         'pytz',
         'xlsxwriter',
         'emoji',
-        'prettytable'
     ],
 )
