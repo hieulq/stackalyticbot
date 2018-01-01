@@ -9,7 +9,12 @@ IMG = PARDIR + '/imgs/namnh.jpg'
 
 
 def handle(bot, update):
-    msg = '{} Typo! On fire! {}' . format(emojies.fire, emojies.fire)
+    msg = '''{} Typo! On fire! {}
+NAM quốc sơn HÀ NAM đ* nhau.
+Tiệt nhiên hục hoạc tại thiên thư.
+Như HÀ nghịch lỗ NAM xâm phạm.
+Nhữ đẳng hành khan hủ bại hư.
+        '''. format(emojies.fire, emojies.fire)
     bot.send_message(chat_id=update.message.chat_id,
                      text=msg)
     bot.send_sticker(chat_id=update.message.chat_id,

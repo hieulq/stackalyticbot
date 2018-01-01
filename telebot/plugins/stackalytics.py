@@ -192,12 +192,12 @@ def handle(bot, update):
     try:
         config = json.load(open('config.json'))
     except FileNotFoundError:
-        msg = 'Config file doesn\' exist! Type /hep stackalytics again to \
+        msg = 'Config file doesn\' exist! Type /help stackalytics again to \
                check usage!'
         utils.handle_error(LOG, bot, chat_id, msg)
         return
     except json.decoder.JSONDecodeError:
-        msg = 'Wrong format! Type /hep stackalytics again to \
+        msg = 'Wrong format! Type /help stackalytics again to \
               check right format!'
         utils.handle_error(LOG, bot, chat_id, msg)
         return
