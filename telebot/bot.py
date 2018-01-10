@@ -60,7 +60,7 @@ class Bot(object):
         else:
             file_id = update.message.document.file_id
             config_file = bot.get_file(file_id=file_id)
-            config_file.download(custom_path='config.json')
+            config_file.download(custom_path='/tmp/stackalyticsconfig.json')
 
     def _get_commands(self):
         commands = []
@@ -71,13 +71,17 @@ class Bot(object):
         return commands
 
     def run(self):
-        self.updater.start_polling()
+        self.updater.start_polling(clean=True)
         return
 
     def start(self, bot, update):
         bot.send_message(chat_id=update.message.chat_id,
                          text='Hallo! I\'m Telebot, please type /help for '
                               'more info')
+
+    def stop(self):
+        self.updater.stop()
+        return
 
     def help(self, bot, update):
         commands = self._get_commands()
@@ -93,7 +97,7 @@ class Bot(object):
                 text += command[0] + '-' + command[1] + '\n'
         elif len(user_input) == 2 and user_input[1] in command_names:
             text = emojies.information_source + ' ' + \
-                   self.plugins[user_input[1]]['usage']
+                self.plugins[user_input[1]]['usage']
 
         bot.send_message(chat_id=update.message.chat_id, text=text)
 
@@ -112,8 +116,8 @@ class Bot(object):
                 if module.__doc__:
                     _info['whatis'] = module.__doc__.split('\n')[0]
                     _info['usage'] = module.__doc__
-                self.plugins[module_name] = _info
                 LOG.info(_info)
+                self.plugins[module_name] = _info
             except:
                 LOG.warning('Import failed on module {}, module not loaded!' .
                             format(name))

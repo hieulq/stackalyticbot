@@ -12,6 +12,8 @@ if __name__ == '__main__':
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
         handlers=[logging.StreamHandler()])
     TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
-    BOT = bot.Bot(TELEGRAM_TOKEN)
-    BOT.run()
-    LOG.info('Bot started!')
+    try:
+        BOT = bot.Bot(TELEGRAM_TOKEN)
+        BOT.run()
+    except (KeyboardInterrupt, SystemExit):
+        BOT.stop()
