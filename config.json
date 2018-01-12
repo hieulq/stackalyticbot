@@ -1,13 +1,13 @@
 {
     "company": "Fujitsu",
-    "members": [
-        {"Kien": "kiennt2609"},
-        {"Dai": "daidv"},
-        {"Nam": "namnh"},
-        {"Hieu": "hieulq"},
-        {"Vinh": "tovin07"},
-        {"Duong": "duonghq"}
-    ],
+    "members": {
+        "Kien": "kiennt2609",
+        "Dai": "daidv",
+        "Nam": "namnh",
+        "Hieu": "hieulq",
+        "Vinh": "tovin07",
+        "Duong": "duonghq"
+    },
     "review_target": "1219",
     "commit_target": "213"
 }

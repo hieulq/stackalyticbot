@@ -32,6 +32,8 @@ from telebot import utils
 
 LOG = logging.getLogger(__name__)
 
+TEMPLATE = '- `{}`: `{}` commits (`{}`), `{}` reviews (`{}`).\n'  # noqa
+
 
 def query(bot, chat_id, user_id=None, company=None):
     """Query to http://stackalytics.com/"""
@@ -65,10 +67,11 @@ def query(bot, chat_id, user_id=None, company=None):
     return (patches, commits, reviews)
 
 # Fixme(kiennt): A bunch of hardcode! Ugly, ugly...!
+# NOTE(hieulq): need a volunteer to clean this ugly code ASAP...
 
 
 def get_report(workbook, worksheet, member, stats, targets,
-               num_members, index, summary=None):
+               num_members, index, cli_text, summary=None):
     """Create a new Excel file and add a worksheet"""
     # Extract input
     review_target, commit_target = targets
@@ -158,6 +161,10 @@ def get_report(workbook, worksheet, member, stats, targets,
         worksheet.write('I' + str(row - 2), n2, bold)
         worksheet.write('J' + str(row - 3), round(m1 - m2), bold_color)
         worksheet.write('J' + str(row - 2), round(n1 - n2), bold_color)
+        cli_text += '{}*Team statistics:*{}\n'.format(emojies.poop,
+                                                      emojies.poop)
+        cli_text += TEMPLATE.format("Team", commits, round(n1 - n2), reviews,
+                                    round(m1 - m2))
     else:
         worksheet.merge_range('D' + str(row) + ':D' +
                               str(row + 2), member, merge_format)
@@ -185,6 +192,10 @@ def get_report(workbook, worksheet, member, stats, targets,
         worksheet.write('I' + str(row + 2), round(p2), bold)
         worksheet.write('J' + str(row + 1), round(q1 - q2), bold_color)
         worksheet.write('J' + str(row + 2), round(p1 - p2), bold_color)
+        cli_text += TEMPLATE.format('Member ' + member, commits,
+                                    round(p1 - p2), reviews, round(q1 - q2))
+
+    return cli_text
 
 
 def handle(bot, update):
@@ -215,11 +226,11 @@ def handle(bot, update):
     else:
         report = True
 
-    update.message.reply_text('Please wait for seconds! '
+    update.message.reply_text(emojies.no_speak +
+                              'Please wait for few seconds! '
                               'Query members stats from Stackalytics...')
 
-    text = '{} *Report:*\n' . format(emojies.point_right)
-    template = '- Member `{}`: `{}` patches, `{}` commits, `{}` reviews.\n'
+    text = '{} *Member report:*\n' . format(emojies.point_right)
 
     targets = (int(config['review_target']), int(config['commit_target']))
     report_file = \
@@ -231,9 +242,9 @@ def handle(bot, update):
     team_stats_reviews = 0
     worksheet = workbook.add_worksheet()
 
-    for index, member in enumerate(config['members']):
+    for index, name in enumerate(config['members']):
         results = query(bot, chat_id,
-                        user_id=member,
+                        user_id=config['members'][name],
                         company=config['company'])
         if not results:
             continue
@@ -245,14 +256,12 @@ def handle(bot, update):
 
         # Bad performance, condition in loop (Fixme)
         if report:
-            get_report(workbook, worksheet, member, (reviews, commits),
-                       targets, num_members, index)
-            if index == num_members:
-                get_report(workbook, worksheet, 'Team',
-                           (team_stats_reviews, team_stats_commits),
-                           num_members, targets, 0, summary=True)
+            text = get_report(workbook, worksheet, name, (reviews, commits),
+                              targets, num_members, index, text)
 
-        text += template.format(member, patches, commits, reviews)
+    text = get_report(workbook, worksheet, 'Team',
+                      (team_stats_reviews, team_stats_commits),
+                      targets, num_members, 0, text, summary=True)
 
     workbook.close()
 
