@@ -1,5 +1,6 @@
 """Remind everyone in team to send report
-/remind hour:minute reminder - Remind at hour:minute everyday!
+Usage: /remind set hour:minute reminder - Remind at hour:minute everyday!
+       /remind unset - Unset reminded job.
 """
 import datetime
 
@@ -25,17 +26,35 @@ def handle(bot, update, args, job_queue, chat_data):
     context = {}
 
     try:
-        hour, minute = map(int, args.pop(0).split(':'))
-        reminder = ' '.join(args)
-        context['chat_id'] = chat_id
-        context['reminder'] = reminder
+        action = args.pop(0)
 
-        job = job_queue.run_daily(do_remind,
-                                  when=datetime.time(hour=hour, minute=minute),
-                                  context=context)
-        chat_data['job'] = job
+        if action == 'set':
+            hour, minute = map(int, args.pop(0).split(':'))
+            reminder = ' '.join(args)
+            context['chat_id'] = chat_id
+            context['reminder'] = reminder
 
-        update.message.reply_text('Timer successfully set!')
+            # Add job to queue, run once
+            job = job_queue.run_once(do_remind,
+                                     when=datetime.time(
+                                         hour=hour, minute=minute),
+                                     context=context)
+            chat_data['job'] = job
 
+            update.message.reply_text('Timer successfully set!')
+            return
+        elif action == 'unset':
+            if 'job' not in chat_data:
+                update.message.reply_text('You have no active reminder!')
+                return
+            job = chat_data['job']
+            job.schedule_removal()
+            del chat_data['job']
+
+            update.message.reply_text('Timer successfully unset!')
+            return
+        else:
+            raise ValueError
     except(IndexError, ValueError):
-        update.message.reply_text('Usage: /remind hour:minute reminder')
+        update.message.reply_text(
+            'Usage: /remind set hour:minute reminder or /remind unset')
