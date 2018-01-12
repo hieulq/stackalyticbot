@@ -104,10 +104,11 @@ def handle(bot, update, args, job_queue, chat_data):
         hour, minute = map(int, args[0].split(':'))
         context['chat_id'] = chat_id
 
-        # Add job to queue, run daily
-        if len(job_queue.jobs()):
-            for job in job_queue.jobs():
-                job.schedule_removal()
+        # Remove the previous set report
+        if 'job' in chat_data:
+            job = chat_data['job']
+            job.schedule_removal()
+            del chat_data['job']
 
         job = job_queue.run_daily(do_report,
                                   time=time(hour=hour, minute=minute),

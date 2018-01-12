@@ -15,3 +15,4 @@ if __name__ == '__main__':
     BOT = bot.Bot(TELEGRAM_TOKEN)
     BOT.run()
     LOG.info('Bot started!')
+    BOT.idle()

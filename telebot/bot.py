@@ -52,6 +52,7 @@ class Bot(object):
         file_handler = MessageHandler(filters=Filters.document,
                                       callback=self.get_config_file)
         self.dispatcher.add_handler(file_handler)
+        self.dispatcher.add_error_handler(self.error)
 
     def get_config_file(self, bot, update):
         """Handle config file upload. Stackalytics plugin need this!"""
@@ -71,13 +72,25 @@ class Bot(object):
         return commands
 
     def run(self):
-        self.updater.start_polling()
+        self.updater.start_polling(clean=True)
         return
 
     def start(self, bot, update):
         bot.send_message(chat_id=update.message.chat_id,
                          text='Hallo! I\'m Telebot, please type /help for '
                               'more info')
+
+    def stop(self):
+        self.updater.stop()
+        return
+
+    def idle(self):
+        self.updater.idle()
+        return
+
+    def error(self, bot, update, error):
+        """Log Errors caused by Updates."""
+        LOG.warning('Update "%s" caused error "%s"', update, error)
 
     def help(self, bot, update):
         commands = self._get_commands()
@@ -112,8 +125,8 @@ class Bot(object):
                 if module.__doc__:
                     _info['whatis'] = module.__doc__.split('\n')[0]
                     _info['usage'] = module.__doc__
-                self.plugins[module_name] = _info
                 LOG.info(_info)
+                self.plugins[module_name] = _info
             except:
                 LOG.warning('Import failed on module {}, module not loaded!' .
                             format(name))
