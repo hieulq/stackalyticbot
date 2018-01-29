@@ -108,6 +108,7 @@ def handle(bot, update, args, job_queue, chat_data):
             del chat_data['job']
 
         job = job_queue.run_daily(do_report,
+                                  days=(0, 1, 2, 3, 4), # Run MON->FRI
                                   time=time(hour=hour, minute=minute),
                                   context=context)
         chat_data['job'] = job
