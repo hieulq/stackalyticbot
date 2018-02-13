@@ -77,6 +77,10 @@ def get_report(workbook, worksheet, member, stats, targets,
     review_target, commit_target = targets
     reviews, commits = stats
 
+    # Workaround to correct Kien's review numbers.
+    if member == 'Kien':
+        reviews += reviews + 3
+
     today = date.today()
     year = today.year
     month = today.month
